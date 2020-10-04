@@ -53,4 +53,9 @@ The program does the following:
 
 Examples
 --------
+Tweets about COVID-19. Lots of negative sentiment.
+![Image1](COVID.PNG)
 
+Tweets about Apple and Foliage. Lots of positive sentiment.
+![Image1](Apple.PNG)
+![Image1](Foliage.PNG)

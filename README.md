@@ -1,3 +1,5 @@
+[![Build Status](https://github.com/Chris210634/EC601-Fall2020/workflows/.github/workflows/python-app.yml/badge.svg)]
+
 # EC601-Fall2020
 
 Project 2 Phase 1 located in Project2 folder

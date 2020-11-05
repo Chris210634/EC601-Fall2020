@@ -6,7 +6,7 @@ import json
 #Use github secret passed as environment var
 service_account_info = json.loads(os.environ['GOOGLE_SECRET'])
 credentials = service_account.Credentials.from_service_account_info(service_account_info)                                
-self.google = language.LanguageServiceClient(credentials=credentials)
+client = language.LanguageServiceClient(credentials=credentials)
 
 def test_analyze_overall_sentiment_positive():
     text = "Happy Birthday!"

@@ -3,10 +3,16 @@
 import requests
 import json
 import yaml
+import os
 
 def process_yaml():
-    with open("config.yaml") as file:
-        return yaml.safe_load(file)
+    try:
+        with open("config.yaml") as file:
+            return yaml.safe_load(file)
+    except FileNotFoundError:
+        #use environment variable
+        bearer_token = os.environ['TWITTER_BEARER_TOKEN']
+        return {'search_tweets_api': {'bearer_token': bearer_token}}
 
 def create_bearer_token(data):
     return data["search_tweets_api"]["bearer_token"]

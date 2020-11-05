@@ -6,7 +6,7 @@ def test_process_yaml():
 
 def test_create_bearer_token():
     dic = {"search_tweets_api":{"bearer_token":"X"}}
-    assert create_bearer_token(dic) is "X"
+    assert create_bearer_token(dic) == "X"
 
 def test_twitter_auth_and_connect():
     data = process_yaml()

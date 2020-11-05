@@ -5,6 +5,7 @@ import yaml
 import urllib.parse
 import tkinter as tk
 import os
+from google.oauth2 import service_account
 
 # https://cloud.google.com/natural-language/docs/reference/libraries#windows
 # $env:GOOGLE_APPLICATION_CREDENTIALS="C:\Users\username\Downloads\my-key.json"
@@ -37,8 +38,14 @@ class TwitterAPI:
     def __init__(self):
         data = process_yaml()
         self.bearer_token = create_bearer_token(data)
-        self.google = language.LanguageServiceClient()
-    
+
+        if 'GOOGLE_APPLICATION_CREDENTIALS' in os.environ:
+            self.google = language.LanguageServiceClient()
+        else:
+            service_account_info = json.loads(os.environ['GOOGLE_SECRET'])
+            credentials = service_account.Credentials.from_service_account_info(service_account_info)                                
+            self.google = language.LanguageServiceClient(credentials=credentials)
+            
     def twitter_auth_and_connect(self, url):
         headers = {"Authorization": "Bearer {}".format(self.bearer_token)}
         response = requests.request("GET", url, headers=headers)

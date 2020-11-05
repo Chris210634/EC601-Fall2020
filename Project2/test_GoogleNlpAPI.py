@@ -1,6 +1,7 @@
 from GoogleNlpAPI import *
 import os
 from google.oauth2 import service_account
+import json
 
 #Use github secret passed as environment var
 service_account_info = json.loads(os.environ['GOOGLE_SECRET'])

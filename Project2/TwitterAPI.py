@@ -2,7 +2,6 @@
 
 import requests
 import json
-import ast
 import yaml
 
 def process_yaml():

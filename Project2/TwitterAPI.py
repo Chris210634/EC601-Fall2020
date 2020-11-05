@@ -1,7 +1,6 @@
 # https://developer.twitter.com/en/docs/tutorials/how-to-analyze-the-sentiment-of-your-own-tweets
 
 import requests
-import pandas as pd
 import json
 import ast
 import yaml

@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/Chris210634/EC601-Fall2020/workflows/.github/workflows/python-app.yml/badge.svg)]
+[![Build Status](https://github.com/Chris210634/EC601-Fall2020/workflows/python-app/badge.svg)]
 
 # EC601-Fall2020
 

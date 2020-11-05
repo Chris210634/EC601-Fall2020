@@ -4,6 +4,7 @@ import ast
 import yaml
 import urllib.parse
 import tkinter as tk
+import os
 
 # https://cloud.google.com/natural-language/docs/reference/libraries#windows
 # $env:GOOGLE_APPLICATION_CREDENTIALS="C:\Users\username\Downloads\my-key.json"
@@ -13,8 +14,13 @@ from google.cloud.language import enums
 from google.cloud.language import types
 
 def process_yaml():
-    with open("config.yaml") as file:
-        return yaml.safe_load(file)
+    try:
+        with open("config.yaml") as file:
+            return yaml.safe_load(file)
+    except FileNotFoundError:
+        #use environment variable
+        bearer_token = os.environ['TWITTER_BEARER_TOKEN']
+        return {'search_tweets_api': {'bearer_token': bearer_token}}
     
 def create_bearer_token(data):
     return data["search_tweets_api"]["bearer_token"]

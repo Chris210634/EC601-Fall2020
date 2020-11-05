@@ -53,9 +53,14 @@ class TwitterAPI:
         url = 'https://api.twitter.com/1.1/search/tweets.json?q={}&result_type=mixed&count={}'.format(query,max_tweets)
         res_json = self.twitter_auth_and_connect(url)
         tweets = []
-        for tweet in res_json['statuses']:
-            tweet['sentiment'] = self.analyze_sentiment(tweet['text'])
-            tweets.append(tweet)
+        if 'statuses' in res_json:
+            for tweet in res_json['statuses']:
+                try:
+                    tweet['sentiment'] = self.analyze_sentiment(tweet['text'])
+                except:
+                    # sometimes this doesn't work because of symbols, langauge etc.
+                    tweet['sentiment'] = 0
+                tweets.append(tweet)
         return tweets
 
 def doSearch():

@@ -6,7 +6,7 @@ from google.cloud.language import enums
 from google.cloud.language import types
 
 # Return the overall sentiment of the text
-def analyze_overall_sentiment(text):
+def analyze_overall_sentiment(client,text):
     document = types.Document(
         content=text,
         type=enums.Document.Type.PLAIN_TEXT)
@@ -19,7 +19,7 @@ def analyze_overall_sentiment(text):
     return sentiment.score, sentiment.magnitude
 
 # Find keywords with high salience in the text.
-def extract_keywords(text):
+def extract_keywords(client,text):
     # https://googleapis.dev/python/language/latest/usage.html
     document = language.types.Document(
          content=text,
@@ -37,7 +37,7 @@ def extract_keywords(text):
     
     return response
 
-def analyze_entity_sentiment(text):
+def analyze_entity_sentiment(client,text):
     document = language.types.Document(
         content=text,
         type='PLAIN_TEXT',
@@ -57,22 +57,24 @@ def analyze_entity_sentiment(text):
 
     return entities
 
-# Instantiates a client
-client = language.LanguageServiceClient()
+if __name__ == "__main__":
+    
+    # Instantiates a client
+    client = language.LanguageServiceClient()
 
-# The text to analyze
-text = u'The chicken laid an egg. The geese swim in the lake.'
-analyze_overall_sentiment(text)
-analyze_entity_sentiment(text)
-print()
+    # The text to analyze
+    text = u'The chicken laid an egg. The geese swim in the lake.'
+    analyze_overall_sentiment(client, text)
+    analyze_entity_sentiment(client,text)
+    print()
 
-text = u'I hate that dog. He pees all over the house.'
-analyze_overall_sentiment(text)
-analyze_entity_sentiment(text)
-print()
+    text = u'I hate that dog. He pees all over the house.'
+    analyze_overall_sentiment(client,text)
+    analyze_entity_sentiment(client,text)
+    print()
 
-text = u'My birthday is tomorrow, I am so excited !!!!!'
-analyze_overall_sentiment(text)
-analyze_entity_sentiment(text)
-print()
+    text = u'My birthday is tomorrow, I am so excited !!!!!'
+    analyze_overall_sentiment(client,text)
+    analyze_entity_sentiment(client,text)
+    print()
 

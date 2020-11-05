@@ -29,14 +29,18 @@ def print_tweet(tweet):
     print(tweet['text'])
     print('-----------------------------------------------------')
 
-def connect_to_endpoint(url, headers):
+#inifinite method
+def connect_to_endpoint(url, headers, test=False):
     response = requests.request("GET", url, headers=headers, stream=True)
     print(response.status_code)
     for response_line in response.iter_lines():
         if response_line:
             json_response = json.loads(response_line)
-            print_tweet(json_response["data"])
-            
+            if 'data' in json_response:
+                print_tweet(json_response["data"])
+        if test:
+            break
+
     if response.status_code != 200:
         raise Exception(
             "Request returned an error: {} {}".format(
@@ -162,13 +166,15 @@ if __name__ == "__main__":
 
     # Get most recent tweets from a user and print them out
     res_json = get_most_recent_tweets('Christo84553156',10) # get 10 most recent tweets from me
-    for tweet in res_json['data']:
-        print_tweet(tweet)
+    if 'data' in res_json:
+        for tweet in res_json['data']:
+            print_tweet(tweet)
 
     # Look up a tweet by its ID and print out the tweet contents
     res_json = get_tweet_by_id('1310231452743864321')
-    for tweet in res_json['data']:
-        print_tweet(tweet)
+    if 'data' in res_json:
+        for tweet in res_json['data']:
+            print_tweet(tweet)
 
     # Get the trendiest hashtags from a location
     # location ID = 1 is worldwide
@@ -184,7 +190,7 @@ if __name__ == "__main__":
 
     # More compicated example: Create a filtered stream and run it
     clear_twitter_stream_rules()
-    res_json = add_twitter_stream_rule('Patriots Raiders')
+    res_json = add_twitter_stream_rule('election')
     res_json = get_twitter_stream_rules()
 
     #infinite loop

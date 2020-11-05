@@ -34,5 +34,6 @@ jobs:
     - name: Test with pytest
       env:
         TWITTER_BEARER_TOKEN: ${{ secrets.TWITTER_BEARER_TOKEN }}
+        GOOGLE_SECRET:   ${{ secrets.GOOGLE_SECRET }}
       run: |
         pytest

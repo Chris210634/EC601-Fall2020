@@ -93,7 +93,7 @@ class Node:
                str(self.core_status) + '\n' + \
                'jobs: ' + str(self.core_job_id)
 
-class BananaEnv(gym.Env):
+class ClusterEnv(gym.Env):
     """
     Define a simple Banana environment.
     The environment defines which actions can be taken at which point and
@@ -101,7 +101,7 @@ class BananaEnv(gym.Env):
     """
 
     def __init__(self) -> None:
-        self.number_of_nodes = 2
+        self.number_of_nodes = 1
         self.number_of_cores_per_node = 8
         self.nodes = []
         for _ in range(self.number_of_nodes):
@@ -109,31 +109,57 @@ class BananaEnv(gym.Env):
         self.queue = []
         self.next_job_id = 1
 
+        # Maybe we want to minimize this. Use as loss?
+        self.cumulative_wait_time = 0
+
+        # If off-line training, generate list of jobs up-front
+        self.queue = self._generate_off_line_jobs()
+
+    def _generate_off_line_jobs(self):
+        """
+        For off-line scheduling, all jobs arrive at t=0.
+        game continues until all jobs are scheduled.
+        This function populates the queue at t=0
+        """
+        random.seed(1423)
+        total_number_of_jobs = 100
+        max_time = 512
+        queue = []
+
+        for i in range(1, total_number_of_jobs+1):
+            num_cores = random.randrange(1, self.number_of_cores_per_node + 1)
+            num_time = random.randrange(1, max_time + 1)
+            queue.append(Job(num_cores, num_time, i))
+        return queue
+
     def get_job_arrivals(self):
         """
         Return a set of jobs to arrive at timestep.
+        If running in off-line mode (no job arrivals after t=0),
+        then just return empty list.
         """
-        r = random.random()
-        capacity = self.number_of_nodes * self.number_of_cores_per_node
-        arrival_frequency = 2
-        number_jobs = 3
-        if r > 1.0 / arrival_frequency:
-            #capacity = arrival_frequency * capacity
-            # total time*cores = capacity
-            #per_job_capacity = capacity / number_jobs
-            
-            self.next_job_id += number_jobs
-
-            #n_cores = random.randrange(1,self.number_of_cores_per_node+1)
-
-            
-            # try deterministic blocks first.
-            # all add up to 32
-            return [Job(2, 8, self.next_job_id),
-                    Job(1, 8, self.next_job_id+1),
-                    Job(4, 2, self.next_job_id+2)]
-        else:
-            return []
+        return []
+##        r = random.random()
+##        capacity = self.number_of_nodes * self.number_of_cores_per_node
+##        arrival_frequency = 2
+##        number_jobs = 3
+##        if r > 1.0 / arrival_frequency:
+##            #capacity = arrival_frequency * capacity
+##            # total time*cores = capacity
+##            #per_job_capacity = capacity / number_jobs
+##            
+##            self.next_job_id += number_jobs
+##
+##            #n_cores = random.randrange(1,self.number_of_cores_per_node+1)
+##
+##            
+##            # try deterministic blocks first.
+##            # all add up to 32
+##            return [Job(2, 8, self.next_job_id),
+##                    Job(1, 8, self.next_job_id+1),
+##                    Job(4, 2, self.next_job_id+2)]
+##        else:
+##            return []
 
     def step(self):
         """
@@ -172,6 +198,7 @@ class BananaEnv(gym.Env):
         for node in self.nodes:
             finished_jobs = node.step()
             total_finished_jobs += len(finished_jobs)
+        self.cumulative_wait_time += len(self.queue)
 
         # Calculate reward
         reward = total_finished_jobs
@@ -185,10 +212,16 @@ class BananaEnv(gym.Env):
         for job in self.queue:
             job.priority += 1
 
+        # Game over when queue is empty
+        if len(self.queue) == 0:
+            game_over = True
+        else:
+            game_over = False
+
         # Just return reward for now, because our system is fully transparent
         # i.e., the Agent has perfect knowledge of environment state.
         # return ob, reward, episode_over, debug_info
-        return None, reward, False, {}
+        return None, reward, game_over, {}
 
     def take_action(self, action):
         """
@@ -221,13 +254,15 @@ class BananaEnv(gym.Env):
         return None
 
     def __str__(self):
-        return_str = 'Queue: \n'
-        for job in self.queue:
-            return_str += str(job)
-            return_str += '\n'
+        return_str = 'Length of queue: ' + str(len(self.queue))
+##        return_str = 'Queue: \n'
+##        for job in self.queue:
+##            return_str += str(job)
+##            return_str += '\n'
         for node in self.nodes:
             return_str += str(node)
             return_str += '\n'
+        return_str += 'loss: ' + str(self.cumulative_wait_time)
         return return_str
 
     def _get_state(self) -> List[int]:

@@ -102,7 +102,7 @@ class ClusterEnv(gym.Env):
 
     def __init__(self) -> None:
         self.number_of_nodes = 1
-        self.number_of_cores_per_node = 8
+        self.number_of_cores_per_node = 32
         self.nodes = []
         for _ in range(self.number_of_nodes):
             self.nodes.append(Node(self.number_of_cores_per_node))
@@ -121,9 +121,9 @@ class ClusterEnv(gym.Env):
         game continues until all jobs are scheduled.
         This function populates the queue at t=0
         """
-        random.seed(1423)
-        total_number_of_jobs = 100
-        max_time = 512
+        random.seed(564) #TUNE
+        total_number_of_jobs = 64 #TUNE
+        max_time = 16 #TUNE
         queue = []
 
         for i in range(1, total_number_of_jobs+1):
